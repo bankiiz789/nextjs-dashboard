@@ -6,14 +6,16 @@ const prisma = new PrismaClient();
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const search = searchParams.get("search") || "";
-  const categoryId = searchParams.get("categoryId");
+  const category = searchParams.get("category");
   const sort = searchParams.get("sort") || "desc";
 
-  const paseIntCategory = Number(categoryId);
-
-  const whereCondition = categoryId
+  const whereCondition = category
     ? {
-        categoryId: paseIntCategory,
+        Category: {
+          is: {
+            name: category,
+          },
+        },
         title: {
           contains: search,
           mode: "insensitive",

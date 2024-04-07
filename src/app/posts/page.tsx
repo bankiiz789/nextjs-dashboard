@@ -9,14 +9,14 @@ type Props = {};
 export default function Page({}: Props) {
   const [posts, setPosts] = useState([]);
   const [search, setSearch] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+  const [category, setCategory] = useState("");
   const [categories, setCategories] = useState([]);
   const [sort, setSort] = useState("desc");
   const fetchPost = async () => {
     try {
       const query = new URLSearchParams({
         search,
-        categoryId,
+        category,
         sort,
       }).toString();
       const response = await axios.get(`/api/posts?${query}`);
@@ -64,13 +64,13 @@ export default function Page({}: Props) {
             className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
             className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="">Select Category</option>
             {categories.map((el: any) => (
-              <option key={el.id} value={el.id}>
+              <option key={el.id} value={el.name}>
                 {el.name}
               </option>
             ))}
