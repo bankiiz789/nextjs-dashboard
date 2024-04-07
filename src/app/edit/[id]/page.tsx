@@ -6,25 +6,32 @@ import { useRouter } from "next/navigation";
 
 const Edit = ({ params }: { params: { id: string } }) => {
   const { id } = params;
-  //   const postId = Number(id);
 
-  const [postUpdated, setPostUpdated] = useState<any>({});
-  //   const [title, setTitle] = useState("");
-  //   const [content, setContent] = useState("");
+  const [postUpdated, setPostUpdated] = useState<any>({}); // {title : "" , content : "" , categoryId : ""}
+  const [categories, setCategories] = useState([]);
+
   const router = useRouter();
 
   const fetchPostById = async (id: Number) => {
     try {
       const res = await axios.get(`/api/posts/${id}`);
-      //   setTitle(res.data.title);
-      //   setContent(res.data.content);
       setPostUpdated(res.data);
     } catch (err) {
       console.log(err);
     }
   };
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get("/api/categories");
+      setCategories(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const handleChangeInput = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { value, name } = e.target;
     setPostUpdated({ ...postUpdated, [name]: value });
@@ -33,10 +40,11 @@ const Edit = ({ params }: { params: { id: string } }) => {
   const handleSubmitUpdated = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { title, content } = postUpdated;
+      const { title, content, categoryId } = postUpdated;
       await axios.put(`http://localhost:3000/api/posts/${id}`, {
         title,
         content,
+        categoryId,
       });
       router.push("/posts");
     } catch (err) {
@@ -46,8 +54,9 @@ const Edit = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     if (id) {
       fetchPostById(parseInt(id));
+      fetchCategories();
     }
-  }, []);
+  }, [id]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -86,6 +95,22 @@ const Edit = ({ params }: { params: { id: string } }) => {
             onChange={handleChangeInput}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           ></textarea>
+        </div>
+        <div>
+          <label>Category</label>
+          <select
+            value={postUpdated.categoryId}
+            name="categoryId"
+            onChange={handleChangeInput}
+          >
+            <option value="">Select a category</option>
+
+            {categories.map((el: any) => (
+              <option key={el.id} value={el.id}>
+                {el.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <button

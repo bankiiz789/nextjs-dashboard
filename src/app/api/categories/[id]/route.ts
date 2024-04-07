@@ -2,30 +2,17 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  return Response.json(
-    await prisma.post.findUnique({
-      where: { id: Number(params.id) },
-      include: { Category: true },
-    })
-  );
-}
-
 export async function PUT(
   req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const { title, content, categoryId } = await req.json();
-    return Response.json(
-      await prisma.post.update({
-        where: { id: Number(params.id) },
-        data: { title, content, categoryId: Number(categoryId) },
-      })
-    );
+    const { name } = await req.json();
+    const category = await prisma.category.update({
+      where: { id: Number(params.id) },
+      data: { name },
+    });
+    return Response.json(category);
   } catch (error) {
     return new Response(error as BodyInit, {
       status: 500,
@@ -39,7 +26,7 @@ export async function DELETE(
 ) {
   try {
     return Response.json(
-      await prisma.post.delete({
+      await prisma.category.delete({
         where: { id: Number(params.id) },
       })
     );

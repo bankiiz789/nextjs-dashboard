@@ -1,18 +1,39 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
 const Create = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [categories, setCategories] = useState([]);
   const router = useRouter();
 
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get("/api/categories");
+      setCategories(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const handleSubmitCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("/api/posts", { title, content });
+      console.log(categoryId);
+      await axios.post("/api/posts", {
+        title,
+        content,
+        categoryId: Number(categoryId),
+      });
+      //   console.log("title", title);
+      //   console.log("content", content);
+
       router.push("/posts");
     } catch (err) {
       console.log(err);
@@ -56,6 +77,21 @@ const Create = () => {
             onChange={(e) => setContent(e.target.value)}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           ></textarea>
+        </div>
+        <div>
+          <label>Category</label>
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+          >
+            <option value="">Select a category</option>
+            {/* Example static categories, replace or populate dynamically */}
+            {categories.map((el: any) => (
+              <option key={el.id} value={el.id}>
+                {el.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <button
