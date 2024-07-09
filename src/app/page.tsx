@@ -17,6 +17,13 @@ const page = (props: Props) => {
       >
         GO TO DASH BOARD
       </Link>
+      <Link
+        key="1"
+        href="http://localhost:3000/posts"
+        className="border-2 rounded-lg hover:bg-gray-400 p-2"
+      >
+        GO TO TO DO LIST
+      </Link>
     </div>
   );
 };
